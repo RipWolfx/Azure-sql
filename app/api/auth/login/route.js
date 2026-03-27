@@ -5,8 +5,18 @@ import { signToken } from '../../../../lib/auth';
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const { email, password } = body;
+    let email = '';
+    let password = '';
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await req.json();
+      email = body.email;
+      password = body.password;
+    } else if (contentType.includes('application/x-www-form-urlencoded')) {
+      const form = await req.formData();
+      email = form.get('email') || '';
+      password = form.get('password') || '';
+    }
     if (!email || !password) {
       return NextResponse.json({ success: false, message: 'Email y contraseña son requeridos' }, { status: 400 });
     }
@@ -28,7 +38,8 @@ export async function POST(req) {
     }
 
     const token = signToken({ id: user.id, email: user.email, role: user.role });
-    const res = NextResponse.json({ success: true });
+    const isFormPost = contentType.includes('application/x-www-form-urlencoded');
+    const res = isFormPost ? NextResponse.redirect(new URL('/admin', req.nextUrl)) : NextResponse.json({ success: true });
     res.cookies.set('auth_token', token, {
       httpOnly: true,
       path: '/',

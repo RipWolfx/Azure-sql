@@ -8,36 +8,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  async function onSubmit(e) {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Error de inicio de sesión');
-      }
-      window.location.href = '/admin';
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  function onSubmit() {}
 
   return (
     <div style={{ display: 'grid', placeItems: 'center', height: '100vh' }}>
-      <form onSubmit={onSubmit} style={{ width: 360, background: '#fff', padding: 24, borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}>
+      <form action="/api/auth/login" method="POST" style={{ width: 360, background: '#fff', padding: 24, borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}>
         <h1 style={{ marginTop: 0, marginBottom: 12 }}>Iniciar sesión</h1>
         <p style={{ color: '#6b7280', marginTop: 0 }}>Admin panel (demo) con Azure SQL</p>
         <label style={{ display: 'block', marginTop: 12 }}>Correo</label>
         <input
           type="email"
+          name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="tu@correo.com"
@@ -47,6 +28,7 @@ export default function LoginPage() {
         <label style={{ display: 'block', marginTop: 12 }}>Contraseña</label>
         <input
           type="password"
+          name="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
