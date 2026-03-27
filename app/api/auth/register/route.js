@@ -43,7 +43,14 @@ export async function POST(req) {
       maxAge: 2 * 60 * 60
     });
     return res;
-  } catch {
+  } catch (err) {
+    console.error('AUTH_REGISTER_ERROR', { name: err?.name, code: err?.code, message: err?.message });
+    if (typeof err?.message === 'string' && err.message.startsWith('MISSING_ENV:')) {
+      return NextResponse.json({ success: false, message: 'Faltan variables de entorno de Azure SQL en Vercel' }, { status: 500 });
+    }
+    if (typeof err?.message === 'string' && err.message.toLowerCase().includes('failed to connect')) {
+      return NextResponse.json({ success: false, message: 'No se pudo conectar a Azure SQL (revisa firewall/red y credenciales)' }, { status: 500 });
+    }
     return NextResponse.json({ success: false, message: 'Error registrando usuario' }, { status: 500 });
   }
 }

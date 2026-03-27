@@ -14,7 +14,7 @@ export default function AdminPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/users', { cache: 'no-store' });
+      const res = await fetch('/api/users', { cache: 'no-store', credentials: 'include' });
       if (!res.ok) throw new Error('No se pudo cargar usuarios');
       const data = await res.json();
       setUsers(data.users || []);
@@ -37,7 +37,8 @@ export default function AdminPage() {
       const res = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        credentials: 'include'
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Error al crear usuario');
@@ -55,7 +56,8 @@ export default function AdminPage() {
       const res = await fetch(`/api/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        credentials: 'include'
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Error al actualizar usuario');
@@ -70,7 +72,7 @@ export default function AdminPage() {
     setError('');
     if (!confirm('¿Eliminar usuario?')) return;
     try {
-      const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/users/${id}`, { method: 'DELETE', credentials: 'include' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Error al eliminar usuario');
       await load();
